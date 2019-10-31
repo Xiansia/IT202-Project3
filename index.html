@@ -6,8 +6,8 @@
 Your browser does not support the HTML5 canvas tag.</canvas><br>
     
 <button onclick="start()" align="center">Start Game</button>
-<button onclick="moveup()">Up</button>
-<button onclick="movedown()">Down</button>
+<button onmouseup="moveup()" onmousedown="clearMove()">Up</button>
+<button onmouseup="movedown()" onmousedown="clearMove()">Down</button>
 <br>
 <img id="DeadTrex" src="DeadTrex.jpg" alt="Dead">Dimensions of this sprite is 40 x 43<br>
 <img id="DuckTrex1" src="DuckTrex1.jpg" alt="Duck1">Dimensions of this sprite is 55 x 26
@@ -47,6 +47,8 @@ var GameArea = {
         var img2 = document.getElementById("DuckTrex1");
         ctx.drawImage(img2, 200, 373);
         GameArea.drawFloor();
+        this.frameNo = 0;
+        this.interval = setInterval(updateGameArea, 100);
     }
 
 }
@@ -88,26 +90,17 @@ function component(width, height, x, y, who) {
             else{
                 //Change sprite depending on action.
                 if(this.y < 356){
+                    this.width = 40;
+                    this.height = 43;
                     this.currentSprite = idle;
                 }
-                else if((this.y > 356)&&(this.y < 373)){
-                    //Trex is running
+                else{
+                    //Trex is running or ducking
                     if(this.currentSprite == run1){
                         this.currentSprite = run2;
                     }
                     else{
                         this.currentSprite = run1;
-                    }
-                }
-                else{
-                    //Trex is ducking
-                    this.width = 55;
-                    this.height = 26;
-                    if(this.currentSprite == duck1){
-                        this.currentSprite = duck2;
-                    }
-                    else{
-                        this.currentSprite = duck1;
                     }
                 }
                 console.log("Player->else");
@@ -127,8 +120,13 @@ function component(width, height, x, y, who) {
 }
 function updateGameArea() {
     GameArea.clearCanvas();
+    GameArea.drawFloor();
     player.newPos();
     player.update();
+}
+function clearMove(){
+    player.speedY = 0;
+    player.speedX = 0;
 }
 function moveup() {
     player.speedY = -20; 

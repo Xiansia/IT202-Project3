@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<body onload="Title();">
+
+<canvas id="myCanvas" width="1000" height="500" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas><br>
+    
+<button onclick="startGame()" align="center">Start Game</button>
+<button onclick="moveup()">Up</button>
+<button onclick="movedown()">Down</button>
+<br>
+<img id="DeadTrex" src="DeadTrex.jpg" alt="Dead">Dimensions of this sprite is 40 x 43<br>
+<img id="DuckTrex1" src="DuckTrex1.jpg" alt="Duck1">Dimensions of this sprite is 55 x 26
+<img id="DuckTrex2" src="DuckTrex2.jpg" alt="Duck2" style="display:none;">    
+<img id="RunTrex1" src="RunTrex1.jpg" alt="Run1" style="display:none;">    
+<img id="RunTrex2" src="RunTrex2.jpg" alt="Run2" style="display:none;">  
+<img id="IdleTrex" src="IdleTrex.jpg" alt="Idle" style="display:none;">    
+
+    
+
+<script>
+var player;
+var GameArea = {
+    canvas: document.getElementById("myCanvas");   
+    ctx : canvas.getContext("2d");
+    clearCanvas : function(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    drawFloor : function(){
+        ctx.moveTo(0, 400);
+        ctx.lineTo(1000,400);
+        ctx.stroke();
+    }
+    startGame : function(){  
+        clearCanvas();
+        
+    
+        player = new component(40, 43, 100, 356, "player");
+        player.update();
+//     var img = document.getElementById("IdleTrex");
+//     ctx.drawImage(img, 100, 356);
+    
+        var img2 = document.getElementById("DuckTrex1");
+        ctx.drawImage(img2, 200, 373);
+        drawFloor();
+    }
+
+}
+function Title(){
+   
+    ctx.font = "30px Times New Roman";
+    ctx.fillText("T-Rex Game", 400, 150);
+    
+    //Style Title Later
+    GameArea.drawFloor();
+}
+    
+var run1 = document.getElementById("RunTrex1");
+var run2 = document.getElementById("RunTrex2")
+var duck1 = document.getElementById("DuckTrex1");
+var duck2 = document.getElementById("DuckTrex2");
+var dead = document.getElementById("DeadTrex");
+var idle = document.getElementById("IdleTrex");
+    
+function component(width, height, x, y, who) {
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+    this.speedX = 0;
+    this.speedY = 0;
+    this.currentSprite = null;
+    this.update = function() {
+        if (who == "player"){
+            if(this.currentSprite == null){
+                this.currentSprite = idle;
+                console.log("Player->null");
+            }
+            else{
+                //Change sprite depending on action.
+                if(this.y < 356){
+                    this.currentSprite = idle;
+                }
+                else if((this.y > 356)&&(this.y < 373)){
+                    //Trex is running
+                    if(this.currentSprite == run1){
+                        this.currentSprite = run2;
+                    }
+                    else{
+                        this.currentSprite = run1;
+                    }
+                }
+                else{
+                    //Trex is ducking
+                    this.width = 55;
+                    this.height = 26;
+                    if(this.currentSprite == duck1){
+                        this.currentSprite = duck2;
+                    }
+                    else{
+                        this.currentSprite = duck1;
+                    }
+                }
+                console.log("Player->else");
+            }
+            GameArea.ctx.drawImage(this.currentSprite, this.x, this.y, this.width, this.height);
+        }
+        else {
+            console.log("Else");
+//             ctx.fillStyle = color;
+//             ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    }
+    this.newPos = function() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+    }
+}
+function updateGameArea() {
+    GameArea.clearCanvas();
+    player.newPos();
+    player.update();
+}
+function moveup() {
+    player.speedY = -20; 
+    //player.update();
+}
+
+function movedown() {
+    player.speedY = 1; 
+    //player.update();
+}
+</script>
+    
+    
+</body>
+</html>

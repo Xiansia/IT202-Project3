@@ -5,7 +5,7 @@
 <canvas id="myCanvas" width="1000" height="500" style="border:1px solid #d3d3d3;">
 Your browser does not support the HTML5 canvas tag.</canvas><br>
     
-<button onclick="startGame()" align="center">Start Game</button>
+<button onclick="start()" align="center">Start Game</button>
 <button onclick="moveup()">Up</button>
 <button onclick="movedown()">Down</button>
 <br>
@@ -20,19 +20,23 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
 
 <script>
 var player;
+
 var GameArea = {
-    canvas: document.getElementById("myCanvas");   
-    ctx : canvas.getContext("2d");
+    canvas : document.getElementById("myCanvas"),   
+    
     clearCanvas : function(){
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+        var ctx = this.canvas.getContext("2d");
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
     drawFloor : function(){
+        var ctx = this.canvas.getContext("2d");
         ctx.moveTo(0, 400);
         ctx.lineTo(1000,400);
         ctx.stroke();
-    }
+    },
     startGame : function(){  
-        clearCanvas();
+        var ctx = this.canvas.getContext("2d");
+        this.clearCanvas();
         
     
         player = new component(40, 43, 100, 356, "player");
@@ -42,12 +46,16 @@ var GameArea = {
     
         var img2 = document.getElementById("DuckTrex1");
         ctx.drawImage(img2, 200, 373);
-        drawFloor();
+        GameArea.drawFloor();
     }
 
 }
+function start() {
+    GameArea.clearCanvas();
+    GameArea.startGame();
+}
 function Title(){
-   
+    var ctx = GameArea.canvas.getContext("2d");
     ctx.font = "30px Times New Roman";
     ctx.fillText("T-Rex Game", 400, 150);
     
@@ -70,6 +78,7 @@ function component(width, height, x, y, who) {
     this.speedX = 0;
     this.speedY = 0;
     this.currentSprite = null;
+    var ctx = GameArea.canvas.getContext("2d");
     this.update = function() {
         if (who == "player"){
             if(this.currentSprite == null){
@@ -103,7 +112,7 @@ function component(width, height, x, y, who) {
                 }
                 console.log("Player->else");
             }
-            GameArea.ctx.drawImage(this.currentSprite, this.x, this.y, this.width, this.height);
+            ctx.drawImage(this.currentSprite, this.x, this.y, this.width, this.height);
         }
         else {
             console.log("Else");

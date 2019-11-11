@@ -64,6 +64,7 @@ var GameArea = {
                     break;
                 case 40:
                     player.speedY= 1;
+                    player.duck = true;
                     break;
             }
             console.log("Key down happened");
@@ -80,7 +81,7 @@ var GameArea = {
                     player.speedX= 0;
                     break;
                 case 40:
-                    //player.speedY= -5;
+                    player.duck = false;
                     break;
             }
             console.log("Key up happened");
@@ -122,6 +123,7 @@ function Trex(width, height, x, y) {
     this.gravitySpeed = 0;
     this.currentSprite = null;
     this.frameNo = 0;
+    this.duck = false;
     var ctx = GameArea.canvas.getContext("2d");
     
     this.update = function() {
@@ -139,10 +141,21 @@ function Trex(width, height, x, y) {
         else{
             //Trex is running or ducking
             if(this.frameNo < 5){
-                this.currentSprite = run2;
+                if(this.duck){
+                    this.currentSprite = duck2;
+                }
+                else{
+                    this.currentSprite = run2;    
+                }
+                
             }
             else{
-                this.currentSprite = run1;
+                if(this.duck){
+                    this.currentSprite = duck1;
+                }
+                else{
+                    this.currentSprite = run1;    
+                }
                 if(this.frameNo > 10){
                     this.frameNo = 0;
                 }

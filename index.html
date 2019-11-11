@@ -39,17 +39,54 @@ var GameArea = {
         this.clearCanvas();
         
     
-        player = new component(40, 43, 100, 356, "player");
+        player = new Trex(40, 43, 100, 356);
         player.update();
-//     var img = document.getElementById("IdleTrex");
-//     ctx.drawImage(img, 100, 356);
     
         var img2 = document.getElementById("DuckTrex1");
         ctx.drawImage(img2, 200, 373);
         GameArea.drawFloor();
         this.frameNo = 0;
-        this.interval = setInterval(updateGameArea, 100);
+        this.interval = requestAnimationFrame(updateGameArea, 75);
+        window.addEventListener('keydown', function(e) {
+            e.preventDefault();
+            console.log(e);
+            switch (e.keyCode) {
+                case 37:
+                    player.speedX= -5;
+                    break;
+                case 38:
+                    if(player.speedY == 0){
+                        player.speedY = -10;
+                    }
+                    break;
+                case 39:
+                    player.speedX= 5;
+                    break;
+                case 40:
+                    player.speedY= 1;
+                    break;
+            }
+            console.log("Key down happened");
+        })
+        window.addEventListener('keyup', function (e) {
+            switch (e.keyCode) {
+                case 37:
+                    player.speedX= 0;
+                    break;
+                case 38:
+                    //player.speedY = -5;
+                    break;
+                case 39:
+                    player.speedX= 0;
+                    break;
+                case 40:
+                    //player.speedY= -5;
+                    break;
+            }
+            console.log("Key up happened");
+        })
     }
+    
 
 }
 function start() {
@@ -72,50 +109,51 @@ var duck2 = document.getElementById("DuckTrex2");
 var dead = document.getElementById("DeadTrex");
 var idle = document.getElementById("IdleTrex");
     
-function component(width, height, x, y, who) {
+function Trex(width, height, x, y) {
     this.width = width;
     this.height = height;
     this.x = x;
     this.y = y;
     this.speedX = 0;
     this.speedY = 0;
+    this.gravity = 1;
+    this.gravitySpeed = 0;
     this.currentSprite = null;
     var ctx = GameArea.canvas.getContext("2d");
+    
     this.update = function() {
-        if (who == "player"){
-            if(this.currentSprite == null){
-                this.currentSprite = idle;
-                console.log("Player->null");
+        if(this.currentSprite == null){
+            this.currentSprite = idle;
+            console.log("Player->null");
+        }
+        //Change sprite depending on action.
+        if(this.y < 356){
+            this.width = 40;
+            this.height = 43;
+            this.currentSprite = idle;
+        }
+        else{
+            //Trex is running or ducking
+            if(this.currentSprite == run1){
+                this.currentSprite = run2;
             }
             else{
-                //Change sprite depending on action.
-                if(this.y < 356){
-                    this.width = 40;
-                    this.height = 43;
-                    this.currentSprite = idle;
-                }
-                else{
-                    //Trex is running or ducking
-                    if(this.currentSprite == run1){
-                        this.currentSprite = run2;
-                    }
-                    else{
-                        this.currentSprite = run1;
-                    }
-                }
-                console.log("Player->else");
+                this.currentSprite = run1;
             }
-            ctx.drawImage(this.currentSprite, this.x, this.y, this.width, this.height);
+
         }
-        else {
-            console.log("Else");
-//             ctx.fillStyle = color;
-//             ctx.fillRect(this.x, this.y, this.width, this.height);
-        }
+        ctx.drawImage(this.currentSprite, this.x, this.y, this.width, this.height);
+        
     }
     this.newPos = function() {
+        this.gravitySpeed += this.gravity;
         this.x += this.speedX;
-        this.y += this.speedY;
+        this.y += this.speedY + this.gravitySpeed;
+        if(this.y > 356){
+            this.y = 356;
+            this.speedY = 0;
+            this.gravitySpeed = 0;
+        }
     }
 }
 function updateGameArea() {
@@ -128,15 +166,7 @@ function clearMove(){
     player.speedY = 0;
     player.speedX = 0;
 }
-function moveup() {
-    player.speedY = -20; 
-    //player.update();
-}
 
-function movedown() {
-    player.speedY = 1; 
-    //player.update();
-}
 </script>
     
     

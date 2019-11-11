@@ -23,7 +23,7 @@ var player;
 
 var GameArea = {
     canvas : document.getElementById("myCanvas"),   
-    
+    frameNo : 0,
     clearCanvas : function(){
         var ctx = this.canvas.getContext("2d");
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -45,7 +45,7 @@ var GameArea = {
         var img2 = document.getElementById("DuckTrex1");
         ctx.drawImage(img2, 200, 373);
         GameArea.drawFloor();
-        this.frameNo = 0;
+        
         
         window.addEventListener('keydown', function(e) {
             e.preventDefault();
@@ -88,6 +88,11 @@ var GameArea = {
         })
         window.requestAnimationFrame(updateGameArea);
         console.log("After request");
+    },
+    updateScore : function(){
+        var ctx = this.canvas.getContext("2d");
+        ctx.font = "30px Arial";
+        ctx.fillText("Score: " + Math.floor(this.frameNo/2), 25, 50);
     }
     
 
@@ -124,6 +129,7 @@ function Trex(width, height, x, y) {
     this.currentSprite = null;
     this.frameNo = 0;
     this.duck = false;
+    this.lives = 3;
     var ctx = GameArea.canvas.getContext("2d");
     
     this.update = function() {
@@ -142,18 +148,28 @@ function Trex(width, height, x, y) {
             //Trex is running or ducking
             if(this.frameNo < 5){
                 if(this.duck){
+                    this.width = 55;
+                    this.height = 26;
+                    this.y = this.y + 17;
                     this.currentSprite = duck2;
                 }
                 else{
+                    this.width = 40;
+                    this.height = 43;
                     this.currentSprite = run2;    
                 }
                 
             }
             else{
                 if(this.duck){
+                    this.width = 55;
+                    this.height = 26;
+                    this.y = this.y + 17;
                     this.currentSprite = duck1;
                 }
                 else{
+                    this.width = 40;
+                    this.height = 43;
                     this.currentSprite = run1;    
                 }
                 if(this.frameNo > 10){
@@ -182,6 +198,8 @@ function updateGameArea(){
     player.newPos();
     player.update();
     window.requestAnimationFrame(updateGameArea);
+    GameArea.frameNo++;
+    GameArea.updateScore();
 }
 function clearMove(){
     player.speedY = 0;

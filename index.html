@@ -6,15 +6,21 @@
 Your browser does not support the HTML5 canvas tag.</canvas><br>
     
 <button onclick="start()" align="center">Start Game</button>
-<button onmouseup="moveup()" onmousedown="clearMove()">Up</button>
-<button onmouseup="movedown()" onmousedown="clearMove()">Down</button>
 <br>
+<p>T-rex Sprites</p>
 <img id="DeadTrex" src="DeadTrex.jpg" alt="Dead">Dimensions of this sprite is 40 x 43<br>
-<img id="DuckTrex1" src="DuckTrex1.jpg" alt="Duck1">Dimensions of this sprite is 55 x 26
+<img id="DuckTrex1" src="DuckTrex1.jpg" alt="Duck1">Dimensions of this sprite is 55 x 26<br>
 <img id="DuckTrex2" src="DuckTrex2.jpg" alt="Duck2" style="display:none;">    
 <img id="RunTrex1" src="RunTrex1.jpg" alt="Run1" style="display:none;">    
 <img id="RunTrex2" src="RunTrex2.jpg" alt="Run2" style="display:none;">  
-<img id="IdleTrex" src="IdleTrex.jpg" alt="Idle" style="display:none;">    
+<img id="IdleTrex" src="IdleTrex.jpg" alt="Idle" style="display:none;">
+ 
+<p>Cactus Sprites</p>
+<img id="Cactus1" src="Cactus1.jpg" alt="Cactus1" style="width:25px;height:48px;">Dimensions of this sprite is 25 x 48<br>
+<img id="Cactus2" src="Cactus2.jpg" alt="Cactus2" style="width:25px;height:48px;">Dimensions of this sprite is 25 x 48<br>
+<img id="2Cactus" src="2Cactus.jpg" alt="Cactus3" style="width:49px;height:48px;">Dimensions of this sprite is 49 x 48<br>
+<img id="3Cactus" src="3Cactus.jpg" alt="Cactus4" style="width:51px;height:48px;">Dimensions of this sprite is 51 x 48<br>
+<img id="3Cactus2" src="3Cactus2.jpg" alt="Cactus5" style="width:75px;height:48px;">Dimensions of this sprite is 75 x 48<br>
 
     
 
@@ -87,7 +93,7 @@ var GameArea = {
             console.log("Key up happened");
         })
         window.requestAnimationFrame(updateGameArea);
-        console.log("After request");
+        //console.log("After request");
     },
     updateScore : function(){
         var ctx = this.canvas.getContext("2d");
@@ -115,8 +121,7 @@ var run2 = document.getElementById("RunTrex2")
 var duck1 = document.getElementById("DuckTrex1");
 var duck2 = document.getElementById("DuckTrex2");
 var dead = document.getElementById("DeadTrex");
-var idle = document.getElementById("IdleTrex");
-    
+var idle = document.getElementById("IdleTrex");    
 function Trex(width, height, x, y) {
     this.width = width;
     this.height = height;
@@ -192,6 +197,24 @@ function Trex(width, height, x, y) {
         }
     }
 }
+
+var oneCactus1 = document.getElementById("Cactus1");
+var oneCactus2 = document.getElementById("Cactus2")
+var twoCactus1 = document.getElementById("2Cactus");
+var threeCactus1 = document.getElementById("3Cactus1");
+var threeCactus2 = document.getElementById("3Cactus2");  
+function Obstacles(x, y, width, height, speed){
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.speed = speed;
+    
+    this.update() = function(){
+        
+    }
+}
+    
 function updateGameArea(){
     GameArea.clearCanvas();
     GameArea.drawFloor();

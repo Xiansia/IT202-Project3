@@ -27,6 +27,8 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
 <script>
 var player;
 var obstacleArray = [];
+var oneUpArray = [];
+    
 var ID;
 var GameArea = {
     canvas : document.getElementById("myCanvas"),   
@@ -148,7 +150,19 @@ function oneUp(width, height, x, y){
     this.height = height;
     this.x = x;
     this.y = y;
-    this.speedX = 0;
+    this.speed = 5;
+    this.currentSprite = null;
+    var ctx = GameArea.canvas.getContext("2d");
+    
+    this.update = function(){
+        if(this.currentSprite == null){
+            this.currentSprite = idle;
+        }
+        ctx.drawImage(this.currentSprite, this.x, this.y, this.width, this.height);
+    }
+    this.newPos = function(){
+        this.x -= this.speed;
+    }
 }
     
 function Trex(width, height, x, y) {
@@ -253,6 +267,9 @@ function Trex(width, height, x, y) {
     this.loseLife = function(){
         this.lives = this.lives - 1;
     }
+    this.gainLife = function(){
+        this.lives = this.lives + 1;
+    }
 }
 
 var oneCactus1 = document.getElementById("Cactus1");
@@ -311,14 +328,22 @@ function updateGameArea(){
                 GameArea.clearCanvas();
                 GameArea.GameOver();
                 begin = false;
+                
             }
             else{
                 player.loseLife();
-                while(obstacleArray.length > 0){
-                    obstacleArray.pop();
-                }
-                break;
             }
+            while(obstacleArray.length > 0){
+                    obstacleArray.pop();
+            }
+            break;
+        }
+    }
+    for(var item of oneUpArray){
+        if(player.crashWith(item)){
+            oneUpArray.pop();
+            player.gainLife();
+            break;
         }
     }
     if(ID){
@@ -353,11 +378,23 @@ function updateGameArea(){
 
             obstacleArray.push(cactus);
         }
+        if(GameArea.frameNo % 1000 == 0){
+            console.log("Triggered");
+            var powerUp = new oneUp(40, 43, 1000, 300);
+            oneUpArray.push(powerUp);
+        }
         obstacleArray.forEach(function(element) {
             element.newPos();
             element.update();
             if(element.x < -100){
                 obstacleArray.shift();
+            }
+        });
+        oneUpArray.forEach(function(element){
+            element.newPos();
+            element.update();
+            if(element.x < -100){
+                oneUpArray.shift();
             }
         });
     }

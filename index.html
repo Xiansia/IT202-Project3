@@ -30,10 +30,12 @@ var obstacleArray = [];
 var oneUpArray = [];
     
 var ID;
+var level = 1;
 var GameArea = {
     canvas : document.getElementById("myCanvas"),   
     frameNo : 0,
     score : 0,
+    
     clearCanvas : function(){
         var ctx = this.canvas.getContext("2d");
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -66,6 +68,7 @@ var GameArea = {
         var ctx = this.canvas.getContext("2d");
         ctx.font = "30px Arial";
         ctx.fillText("Score: " + GameArea.score, 25, 50);
+        ctx.fillText("Level: " + level, 25, 100)
     },
     GameOver : function(){
         var ctx = this.canvas.getContext("2d");
@@ -89,7 +92,7 @@ function start() {
                 //console.log(e);
                 switch (e.keyCode) {
                     case 37:
-                        player.speedX= -5;
+                        player.speedX= -7;
                         break;
                     case 38:
                         if(player.speedY == 0){
@@ -97,7 +100,7 @@ function start() {
                         }
                         break;
                     case 39:
-                        player.speedX= 5;
+                        player.speedX= 7;
                         break;
                     case 40:
                         player.speedY= 1;
@@ -356,8 +359,9 @@ function updateGameArea(){
         GameArea.updateScore();
         if(GameArea.frameNo % 100 == randominterval){
             randominterval = Math.floor(Math.random()*100);
-            var speed = 7 + (Math.floor(GameArea.score/500) * 2);
+            var speed = 7 + (Math.floor(GameArea.score/250) * 2);
             console.log(speed);
+            level = ((speed - 7)/2) + 1;
             switch(Math.floor(Math.random() * 5)+1){
                 case 1:
                     var cactus = new Obstacle(1000, 354, 25, 48, speed, 1);
@@ -379,7 +383,7 @@ function updateGameArea(){
             obstacleArray.push(cactus);
         }
         if(GameArea.frameNo % 1000 == 0){
-            console.log("Triggered");
+            //console.log("Triggered");
             var powerUp = new oneUp(40, 43, 1000, 300);
             oneUpArray.push(powerUp);
         }

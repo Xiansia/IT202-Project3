@@ -56,7 +56,7 @@ var GameArea = {
         
         window.addEventListener('keydown', function(e) {
             e.preventDefault();
-            //console.log(e);
+            console.log(e);
             switch (e.keyCode) {
                 case 37:
                     player.speedX= -5;
@@ -253,7 +253,8 @@ function Obstacle(x, y, width, height, speed, spriteNumber){
         this.x -= this.speed;
     }
 }
-    
+
+var randominterval = Math.floor(Math.random()*100);    
 function updateGameArea(){
     GameArea.clearCanvas();
     GameArea.drawFloor();
@@ -262,7 +263,8 @@ function updateGameArea(){
     window.requestAnimationFrame(updateGameArea);
     GameArea.frameNo++;
     GameArea.updateScore();
-    if(GameArea.frameNo % 250 == 1){
+    if(GameArea.frameNo % 100 == randominterval){
+        randominterval = Math.floor(Math.random()*100);
         var speed = 7 + (Math.floor(GameArea.score/500) * 2);
         console.log(speed);
         switch(Math.floor(Math.random() * 5)+1){

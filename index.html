@@ -27,6 +27,7 @@ Your browser does not support the HTML5 canvas tag.</canvas><br>
 <script>
 var player;
 var obstacleArray = [];
+var ID;
 var GameArea = {
     canvas : document.getElementById("myCanvas"),   
     frameNo : 0,
@@ -42,6 +43,7 @@ var GameArea = {
         ctx.stroke();
     },
     startGame : function(){  
+        ID = true;
         var ctx = this.canvas.getContext("2d");
         this.clearCanvas();
         
@@ -54,61 +56,77 @@ var GameArea = {
         GameArea.drawFloor();
         
         
-        window.addEventListener('keydown', function(e) {
-            e.preventDefault();
-            console.log(e);
-            switch (e.keyCode) {
-                case 37:
-                    player.speedX= -5;
-                    break;
-                case 38:
-                    if(player.speedY == 0){
-                        player.speedY = -10;
-                    }
-                    break;
-                case 39:
-                    player.speedX= 5;
-                    break;
-                case 40:
-                    player.speedY= 1;
-                    player.duck = true;
-                    break;
-            }
-            //console.log("Key down happened");
-        })
-        window.addEventListener('keyup', function (e) {
-            switch (e.keyCode) {
-                case 37:
-                    player.speedX= 0;
-                    break;
-                case 38:
-                    //player.speedY = -5;
-                    break;
-                case 39:
-                    player.speedX= 0;
-                    break;
-                case 40:
-                    player.duck = false;
-                    break;
-            }
-            //console.log("Key up happened");
-        })
         window.requestAnimationFrame(updateGameArea);
-        //console.log("After request");
+        
     },
     updateScore : function(){
         GameArea.score = Math.floor(GameArea.frameNo/5);
         var ctx = this.canvas.getContext("2d");
         ctx.font = "30px Arial";
         ctx.fillText("Score: " + GameArea.score, 25, 50);
+    },
+    GameOver : function(){
+        var ctx = this.canvas.getContext("2d");
+        ctx.font = "30px Arial";
+        ctx.fillText("Your Score: " + GameArea.score, 250, 250);
+        this.frameNo = 0;
+        this.score = 0;
+        
     }
-    
-
 }
+var begin = false;
+var load = false
 function start() {
-    GameArea.clearCanvas();
-    GameArea.startGame();
+    if(!begin){
+        GameArea.clearCanvas();
+        GameArea.startGame();
+        begin = true;
+        if(!load){
+            window.addEventListener('keydown', function(e) {
+                e.preventDefault();
+                //console.log(e);
+                switch (e.keyCode) {
+                    case 37:
+                        player.speedX= -5;
+                        break;
+                    case 38:
+                        if(player.speedY == 0){
+                            player.speedY = -10;
+                        }
+                        break;
+                    case 39:
+                        player.speedX= 5;
+                        break;
+                    case 40:
+                        player.speedY= 1;
+                        player.duck = true;
+                        break;
+                }
+                //console.log("Key down happened");
+            })
+            window.addEventListener('keyup', function (e) {
+                switch (e.keyCode) {
+                    case 37:
+                        player.speedX= 0;
+                        break;
+                    case 38:
+                        //player.speedY = -5;
+                        break;
+                    case 39:
+                        player.speedX= 0;
+                        break;
+                    case 40:
+                        player.duck = false;
+                        break;
+                }
+                //console.log("Key up happened");
+            })
+            load = true;
+        }
+        
+    }
 }
+
 function Title(){
     var ctx = GameArea.canvas.getContext("2d");
     ctx.font = "30px Times New Roman";
@@ -123,7 +141,16 @@ var run2 = document.getElementById("RunTrex2")
 var duck1 = document.getElementById("DuckTrex1");
 var duck2 = document.getElementById("DuckTrex2");
 var dead = document.getElementById("DeadTrex");
-var idle = document.getElementById("IdleTrex");    
+var idle = document.getElementById("IdleTrex");
+    
+function oneUp(width, height, x, y){
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+    this.speedX = 0;
+}
+    
 function Trex(width, height, x, y) {
     this.width = width;
     this.height = height;
@@ -143,7 +170,7 @@ function Trex(width, height, x, y) {
         this.frameNo++;
         if(this.currentSprite == null){
             this.currentSprite = idle;
-            console.log("Player->null");
+            //console.log("Player->null");
         }
         //Change sprite depending on action. Trex is jumping here
         if(this.y < 356){
@@ -186,6 +213,8 @@ function Trex(width, height, x, y) {
 
         }
         ctx.drawImage(this.currentSprite, this.x, this.y, this.width, this.height);
+        ctx.font = "30px Arial";
+        ctx.fillText("Lives: " + this.lives, 50, 450);
         
     }
     this.newPos = function() {
@@ -205,6 +234,24 @@ function Trex(width, height, x, y) {
             this.x = 500;
             this.speedX = 0;
         }
+    }
+    this.crashWith = function(otherobj) {
+        var myleft = this.x;
+        var myright = this.x + (this.width);
+        var mytop = this.y;
+        var mybottom = this.y + (this.height);
+        var otherleft = otherobj.x;
+        var otherright = otherobj.x + (otherobj.width);
+        var othertop = otherobj.y;
+        var otherbottom = otherobj.y + (otherobj.height);
+        var crash = true;
+        if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
+            crash = false;
+        }
+        return crash;
+    }
+    this.loseLife = function(){
+        this.lives = this.lives - 1;
     }
 }
 
@@ -256,45 +303,64 @@ function Obstacle(x, y, width, height, speed, spriteNumber){
 
 var randominterval = Math.floor(Math.random()*100);    
 function updateGameArea(){
-    GameArea.clearCanvas();
-    GameArea.drawFloor();
-    player.newPos();
-    player.update();
-    window.requestAnimationFrame(updateGameArea);
-    GameArea.frameNo++;
-    GameArea.updateScore();
-    if(GameArea.frameNo % 100 == randominterval){
-        randominterval = Math.floor(Math.random()*100);
-        var speed = 7 + (Math.floor(GameArea.score/500) * 2);
-        console.log(speed);
-        switch(Math.floor(Math.random() * 5)+1){
-            case 1:
-                var cactus = new Obstacle(1000, 356, 25, 48, speed, 1);
+    for(var item of obstacleArray){
+        if(player.crashWith(item)){
+            if(player.lives == 1){
+                window.cancelAnimationFrame(ID);
+                ID = false;
+                GameArea.clearCanvas();
+                GameArea.GameOver();
+                begin = false;
+            }
+            else{
+                player.loseLife();
+                while(obstacleArray.length > 0){
+                    obstacleArray.pop();
+                }
                 break;
-            case 2:
-                var cactus = new Obstacle(1000, 356, 25, 48, speed, 2);
-                break;
-            case 3:
-                var cactus = new Obstacle(1000, 356, 49, 48, speed, 3);
-                break;
-            case 4:
-                var cactus = new Obstacle(1000, 356, 51, 48, speed, 4);
-                break;
-            case 5:
-                var cactus = new Obstacle(1000, 356, 75, 48, speed, 5);
-                break;
+            }
         }
-        
-        obstacleArray.push(cactus);
-        console.log(obstacleArray);
     }
-    obstacleArray.forEach(function(element) {
-        element.newPos();
-        element.update();
-        if(element.x < 0){
-            obstacleArray.shift();
+    if(ID){
+        window.requestAnimationFrame(updateGameArea);
+        GameArea.clearCanvas();
+        GameArea.drawFloor();
+        player.newPos();
+        player.update();
+        GameArea.frameNo++;
+        GameArea.updateScore();
+        if(GameArea.frameNo % 100 == randominterval){
+            randominterval = Math.floor(Math.random()*100);
+            var speed = 7 + (Math.floor(GameArea.score/500) * 2);
+            console.log(speed);
+            switch(Math.floor(Math.random() * 5)+1){
+                case 1:
+                    var cactus = new Obstacle(1000, 354, 25, 48, speed, 1);
+                    break;
+                case 2:
+                    var cactus = new Obstacle(1000, 354, 25, 48, speed, 2);
+                    break;
+                case 3:
+                    var cactus = new Obstacle(1000, 354, 49, 48, speed, 3);
+                    break;
+                case 4:
+                    var cactus = new Obstacle(1000, 354, 51, 48, speed, 4);
+                    break;
+                case 5:
+                    var cactus = new Obstacle(1000, 354, 75, 48, speed, 5);
+                    break;
+            }
+
+            obstacleArray.push(cactus);
         }
-    });
+        obstacleArray.forEach(function(element) {
+            element.newPos();
+            element.update();
+            if(element.x < -100){
+                obstacleArray.shift();
+            }
+        });
+    }
 }
 function clearMove(){
     player.speedY = 0;
